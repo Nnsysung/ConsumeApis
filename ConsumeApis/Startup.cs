@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -18,6 +19,14 @@ namespace ConsumeApis
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.WithOrigins("https://localhost:5001/", "http://")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+            });
+            services.AddHttpClient();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -46,6 +55,7 @@ namespace ConsumeApis
                 options.RoutePrefix = string.Empty;
             });
             app.UseRouting();
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
@@ -54,15 +64,16 @@ namespace ConsumeApis
 
                 //    await context.Response.WriteAsync("Hello World!");
                 //});
-                endpoints.MapControllerRoute(
-                 name: "default",
-                 pattern: "{controller=PhotoAlbum}/{action=MapPhotoAlbum}");
+                //endpoints.MapControllerRoute(
+                // name: "default",
+                // pattern: "{controller=PhotoAlbum}/{action=MapPhotoAlbum}");
                 //endpoints.MapControllerRoute(
                 // name: "default",
                 // pattern: "{controller=PhotoAlbum}/{action=GetPhotoDetails}");
                 //endpoints.MapControllerRoute(
                 // name: "default",
                 // pattern: "{controller=PhotoAlbum}/{action=CsvButton}");
+                endpoints.MapControllers();
             });
         //});
         }
